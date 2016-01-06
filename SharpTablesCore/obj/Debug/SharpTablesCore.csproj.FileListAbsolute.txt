@@ -1,0 +1,10 @@
+C:\Users\i53294\Documents\Projects\SharpTables\SharpTablesCore\obj\Debug\SharpTablesCore.csprojResolveAssemblyReference.cache
+C:\Users\i53294\Documents\Projects\SharpTables\SharpTablesCore\bin\Debug\SharpTablesCore.dll
+C:\Users\i53294\Documents\Projects\SharpTables\SharpTablesCore\bin\Debug\SharpTablesCore.pdb
+C:\Users\i53294\Documents\Projects\SharpTables\SharpTablesCore\obj\Debug\SharpTablesCore.dll
+C:\Users\i53294\Documents\Projects\SharpTables\SharpTablesCore\obj\Debug\SharpTablesCore.pdb
+C:\Users\i53294\Documents\Projects\SharpTables\SharpTablesCore\bin\Debug\System.Web.Http.dll
+C:\Users\i53294\Documents\Projects\SharpTables\SharpTablesCore\bin\Debug\System.Net.Http.Formatting.dll
+C:\Users\i53294\Documents\Projects\SharpTables\SharpTablesCore\bin\Debug\Newtonsoft.Json.dll
+C:\Users\i53294\Documents\Projects\SharpTables\SharpTablesCore\bin\Debug\System.Web.Http.xml
+C:\Users\i53294\Documents\Projects\SharpTables\SharpTablesCore\bin\Debug\System.Net.Http.Formatting.xml

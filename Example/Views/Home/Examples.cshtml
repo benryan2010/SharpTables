@@ -1,0 +1,254 @@
+﻿@model Example.Models.ExampleViewModel
+
+@{
+    ViewBag.Title = "Example";
+}
+
+<div class="container" style="margin-top:50px;">
+    
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Prerequisites</h3>
+            <p>
+                In order for you to get up and running with SharpTables, your app has to have a few things:
+                <ol>
+                    <li>Datatables 1.10 and all required prereqs for datatables</li>
+                    <li>Bootstrap 3 or later</li>
+                    <li>Place the <code>SharpTable.cshtml</code> file in the Views/Shared/DisplayTemplates directory of your app</li>
+                </ol>
+                Also, make sure that you render all of your javascript in the <code>&#60;head&#62;</code> sectioin of your app -
+                the newer MVC project templates automatically render it at the bottom of the page. Ff you don't move the <code>&#64;Scripts.Render()</code> 
+                tags to the head section, you will get a 'cannot read $ of undefined error' because your dataTable script will be read before the library dependencies:
+                ):
+<pre>
+&lt;head&gt;
+    &lt;meta charset=&quot;utf-8&quot; /&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+    &lt;title&gt;&#64;ViewBag.Title - Your App&lt;/title&gt;
+    &#64;Styles.Render(&quot;~/Content/css&quot;)
+    &#64;Scripts.Render(&quot;~/bundles/modernizr&quot;)
+    &#64;Scripts.Render(&quot;~/bundles/jquery&quot;)
+    &#64;Scripts.Render(&quot;~/bundles/bootstrap&quot;)
+    &#64;Scripts.Render(&quot;~/bundles/MyCoolJavascript&quot;)
+    etc...
+    &#64;RenderSection(&quot;scripts&quot;, required: false)
+&lt;/head&gt;
+</pre>
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+
+        <div class="col-md-12">
+
+            <h3>Using <code>List&#60;T&#62;()</code></h3>
+
+            <p>
+                The original objective of the SharpTables project was to create an HTML helper that that enables a developer to use a <code>&#64;Html.DisplayFor(m => m.Table)</code>
+                tag on a <code>List&#60;T&#62;()</code>object in a view model to quickly get a sleek, searchable, &#38; pageable data table. Therefore, with minimal configuration, a develper
+                need only give the constructor a list of objects and a name (that will be translated into an HTML id tag) to render the below table. The framework will automatically render
+                most aspects of the table, including the column lablels and display order, using metadata from the actual view model - increasing maintainability and furthering the RAD cause.
+            </p>
+
+            <div>
+
+                <ul class="nav nav-tabs" role="tablist" style="margin-bottom:25px;">
+                    <li class="active"><a href="#Example1-Table" data-toggle="tab">Table</a></li>
+                    <li><a href="#Example1-Model" data-toggle="tab">Model</a></li>
+                    <li><a href="#Example1-View" data-toggle="tab">View</a></li>
+                    <li><a href="#Example1-Controller" data-toggle="tab">Controller</a></li>
+                </ul> 
+
+                <div class="tab-content">
+
+                    <div role="tabpanel" class="tab-pane active" id="Example1-Table">
+                        @Html.DisplayFor(m => m.Table1)
+                    </div>
+
+                    <div role="tabpanel" class="tab-pane" id="Example1-Model">
+                        <pre>
+                        //C# View Model for the customers table example
+                        //Note that SharpTables uses the Name attribute for column headers
+                        //and the Order attribute for the order in which the columns are 
+                        //displayed, with an index starting at zero
+
+                        public class Customer
+                        {
+                            [Display(Name="Customer ID", Order=0)]
+                            public int CustomerID { get; set; }
+
+                            [Display(Name="Customer Name", Order = 2)]
+                            public string CustomerName { get; set; }
+
+                            [Display(Name="Address", Order= 1)]
+                            public string Address { get; set; }
+                        }
+                        </pre>
+                    </div>
+
+                    <div role="tabpanel" class="tab-pane" id="Example1-View">
+                        <pre>
+                        &#64;model SharpTablesCore.SharpTable&lt;Customer&gt;
+                        &lt;table id=&quot;&#64;Model.Config.TableID&quot; class=&quot;table table-hover table-striped&quot;&gt;
+                            &lt;thead&gt;  
+                                &#64;Html.Raw(Model.GetColumnPlaceHolders())
+                            &lt;/thead&gt;
+                            &lt;tbody&gt;
+                                &#64;if (!Model.Config.DataConfig.IsAjaxData)
+                                {
+                                    foreach (Example.Models.Customer cus in Model.ListItems)
+                                    {
+                                       &lt;tr&gt;
+                                           &#64;foreach (SharpTablesCore.TableComponents.Column c in Model.Columns)
+                                           {
+                                               &lt;td&gt;&#64;cus.GetType().GetProperty(c.Name).GetValue(cus, null).ToString()&lt;/td&gt;
+                                           }
+                                       &lt;/tr&gt;
+                                    }
+                                }
+       
+                            &lt;/tbody&gt;
+                            &lt;tfoot&gt;
+                                &#64;Html.Raw(Model.GetColumnPlaceHolders())
+                            &lt;/tfoot&gt;
+                        &lt;/table&gt;
+                        &lt;script&gt;
+                            $(document).ready(function () {
+                                $('#&#64;Model.Config.TableID').dataTable({
+                                    &#64;Html.Raw(Model.GetTableScripts())
+                                });
+                            });
+                        &lt;/script&gt;
+                        </pre>
+                    </div>
+
+                    <div role="tabpanel" class="tab-pane" id="Example1-Controller">
+                        <pre>
+                        public ActionResult Example()
+                        {   
+                            List&#60;customer&#62; Customers = repository.Customers.ToList();
+
+                            Table1 = new SharpTable&#60;customer&#62;(Customers, new TableConfig
+                            {
+                                TableID = "Table",
+                                DataConfig = new DataConfiguration
+                                {
+                                    IsAjaxData = false
+                                }
+                            });
+                            
+                            return View(Table1)
+                        }
+                        </pre>
+                    </div>
+            
+                </div>
+
+        
+            </div>
+                    
+        </div>
+
+    </div>
+
+    <div class="row">
+
+        <div class="col-md-12">
+
+            <h3>JSON Data</h3>
+
+            <p>
+                SharpTables supports retrieving data through AJAX and provides you wtih flexibility on how to handle server-side processing. Do you have a 
+                need to get up and running ASAP, and are aSlready using entity framework? Just capture the the <code>Request()</code> object in your controller
+                and use the <code>RequestProcessor(Request r, DbContext db)</code> to implement out-of-the-box filtering, paging, and sorting. Have a stored
+                procedure or custom DAL? SharpTables <code>Request()</code> model and custom model binder will make sure that <code>GET</code> or <code>POST</code>
+                requests are bound for your use out-of-the-box.
+            </p>
+            <div>
+
+                <ul class="nav nav-tabs" role="tablist" style="margin-bottom:25px;">
+                    <li class="active"><a href="#Example2-Table" data-toggle="tab">Table</a></li>
+                    <li><a href="#Example2-Model" data-toggle="tab">Model</a></li>
+                    <li><a href="#Example2-View" data-toggle="tab">View</a></li>
+                    <li><a href="#Example2-Controller" data-toggle="tab">Controller</a></li>
+                </ul>
+
+                <div class="tab-content">
+
+                    <div role="tabpanel" class="tab-pane active" id="Example2-Table">
+                        @Html.DisplayFor(m => m.Table2)
+                    </div>
+
+                    <div role="tabpanel" class="tab-pane" id="Example2-Model">
+<pre>
+//C# View Model for the customers table example
+//Note that SharpTables uses the Name attribute for column headers
+//and the Order attribute for the order in which the columns are 
+//displayed, with an index starting at zero
+public class Customer
+{
+    [Display(Name="Customer ID", Order=0)]
+    public int CustomerID { get; set; }
+    [Display(Name="Customer Name", Order = 2)]
+    public string CustomerName { get; set; }
+    [Display(Name="Address", Order= 1)]
+    public string Address { get; set; }
+}
+</pre>
+                    </div>
+
+                    <div role="tabpanel" class="tab-pane" id="Example2-View">
+<pre>
+&#64;model SharpTablesCore.SharpTable&lt;Customer&gt;
+&lt;table id=&quot;&#64;Model.Config.TableID&quot; class=&quot;table table-hover table-striped&quot;&gt;
+    &lt;thead&gt;  
+        &#64;Html.Raw(Model.GetColumnPlaceHolders())
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+        
+    &lt;/tbody&gt;
+    &lt;tfoot&gt;
+        &#64;Html.Raw(Model.GetColumnPlaceHolders())
+    &lt;/tfoot&gt;
+&lt;/table&gt;
+&lt;script&gt;
+    $(document).ready(function () {
+        $('#&#64;Model.Config.TableID').dataTable({
+            &#64;Html.Raw(Model.GetTableScripts())
+        });
+    });
+&lt;/script&gt;
+</pre>
+                    </div>
+
+                    <div role="tabpanel" class="tab-pane" id="Example2-Controller">
+<pre>
+public ActionResult Example()
+{   
+    var Table = new SharpTable&lt;Customer&gt;(typeof(Customer), new TableConfig
+    {
+        TableID = &quot;Table&quot;
+        DataConfig = new DataConfiguration
+        {
+            IsAjaxData = true,
+            IsServerSide = true,
+            Action = ActionType.POST,
+            URL = &quot;/Home/GetData&quot;
+        }
+    });
+                            
+    return View(Table)
+}
+</pre>
+                    </div>
+
+                </div>
+
+
+            </div>
+        </div>
+
+    </div>
+    
+</div>
